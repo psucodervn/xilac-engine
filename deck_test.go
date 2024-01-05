@@ -95,3 +95,69 @@ func TestDeck_Add(t *testing.T) {
 		})
 	}
 }
+
+func TestDeck_Value(t *testing.T) {
+	tests := []struct {
+		name    string
+		d       Deck
+		want    DeckStatus
+		wantSum int
+	}{
+		{
+			name:    "too low",
+			d:       Deck{newCardWithRank(CardRankTwo), newCardWithRank(CardRankThree)},
+			want:    DeckStatusTooLow,
+			wantSum: 5,
+		},
+		{
+			name:    "normal",
+			d:       Deck{newCardWithRank(CardRankFive), newCardWithRank(CardRankAce)},
+			want:    DeckStatusNormal,
+			wantSum: 16,
+		},
+		{
+			name:    "blackjack",
+			d:       Deck{newCardWithRank(CardRankJack), newCardWithRank(CardRankAce)},
+			want:    DeckStatusBlackJack,
+			wantSum: 0,
+		},
+		{
+			name:    "double blackjack",
+			d:       Deck{newCardWithRank(CardRankAce), newCardWithRank(CardRankAce)},
+			want:    DeckStatusDoubleBlackJack,
+			wantSum: 0,
+		},
+		{
+			name:    "busted",
+			d:       Deck{newCardWithRank(CardRankFive), newCardWithRank(CardRankSeven), newCardWithRank(CardRankTen)},
+			want:    DeckStatusBusted,
+			wantSum: 22,
+		},
+		{
+			name:    "too high",
+			d:       Deck{newCardWithRank(CardRankTen), newCardWithRank(CardRankNine), newCardWithRank(CardRankTen)},
+			want:    DeckStatusTooHigh,
+			wantSum: 29,
+		},
+		{
+			name:    "high five",
+			d:       Deck{newCardWithRank(CardRankTwo), newCardWithRank(CardRankThree), newCardWithRank(CardRankFour), newCardWithRank(CardRankFive), newCardWithRank(CardRankTwo)},
+			want:    DeckStatusHighFive,
+			wantSum: 16,
+		},
+		{
+			name:    "high five",
+			d:       Deck{newCardWithRank(CardRankTwo), newCardWithRank(CardRankThree), newCardWithRank(CardRankFour), newCardWithRank(CardRankAce), newCardWithRank(CardRankTwo)},
+			want:    DeckStatusHighFive,
+			wantSum: 12,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			status, sum := tt.d.Value(16, 27)
+			if status != tt.want || sum != tt.wantSum {
+				t.Errorf("Value() = %v, %v, want %v, %v", status, sum, tt.want, tt.wantSum)
+			}
+		})
+	}
+}

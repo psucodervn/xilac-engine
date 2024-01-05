@@ -4,16 +4,20 @@ import (
 	"testing"
 )
 
+func newCardWithRank(rank CardRank) Card {
+	return NewCard(rank, CardSuitHeart)
+}
+
 func TestCard_String(t *testing.T) {
 	tests := []struct {
 		name string
 		id   uint8
 		want string
 	}{
-		{id: 0, want: "A♥"},
-		{id: 9, want: "10♥"},
-		{id: 38, want: "K♣"},
-		{id: 51, want: "K♠"},
+		{id: 0, want: "2♥"},
+		{id: 8, want: "10♥"},
+		{id: 38, want: "A♣"},
+		{id: 50, want: "K♠"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

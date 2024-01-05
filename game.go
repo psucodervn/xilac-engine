@@ -3,7 +3,7 @@ package xilac
 import "errors"
 
 var (
-	ErrInvalidPlayerCount = errors.New("require at least 2 players")
+	ErrInvalidPlayerCount = errors.New("require at least 1 and at most 10 players")
 )
 
 type GameState struct {
@@ -27,6 +27,15 @@ const (
 	GamePlayerStatusTooLow
 )
 
+type GameStatus uint8
+
+const (
+	GameStatusNotStarted GameStatus = iota
+	GameStatusPlayerTurn
+	GameStatusDealerTurn
+	GameStatusFinished
+)
+
 type GamePlayer struct {
 	Deck   Deck             `json:"deck"`
 	Status GamePlayerStatus `json:"status"`
@@ -36,10 +45,11 @@ type Game struct {
 	deck    Deck
 	players []GamePlayer
 	dealer  GamePlayer
+	status  GameStatus
 }
 
 func NewGame(playerCount int) (*Game, error) {
-	if playerCount < 2 {
+	if playerCount < 1 || playerCount > 10 {
 		return nil, ErrInvalidPlayerCount
 	}
 
@@ -50,6 +60,10 @@ func NewGame(playerCount int) (*Game, error) {
 		players: players,
 		dealer:  dealer,
 	}, nil
+}
+
+func (g *Game) Status() GameStatus {
+	return g.status
 }
 
 func (g *Game) deal() {
@@ -68,4 +82,9 @@ func (g *Game) deal() {
 		card, g.deck = g.deck.Pop()
 		g.dealer.Deck = g.dealer.Deck.Push(card)
 	}
+
+	g.checkAndUpdateStatus()
+}
+
+func (g *Game) checkAndUpdateStatus() {
 }

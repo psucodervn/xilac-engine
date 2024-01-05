@@ -2,8 +2,10 @@ package xilac
 
 import "bytes"
 
+const RankPerSuit = 13
+
 var (
-	cardValueNames = []rune("A23456789_JQK")
+	cardValueNames = []rune("23456789_JQKA")
 	cardKindNames  = []rune("♥♦♣♠")
 )
 
@@ -49,7 +51,7 @@ func NewCard(rank CardRank, suit CardSuit) Card {
 		panic("invalid card")
 	}
 
-	return Card(uint8(suit)*13 + uint8(rank))
+	return Card(uint8(suit)*RankPerSuit + uint8(rank))
 }
 
 func NewCardFromID(id int) Card {
@@ -61,21 +63,34 @@ func (c Card) Valid() bool {
 }
 
 func (c Card) Rank() CardRank {
-	return CardRank(c % 13)
+	return CardRank(c % RankPerSuit)
 }
 
 func (c Card) Suit() CardSuit {
-	return CardSuit(c / 13)
+	return CardSuit(c / RankPerSuit)
+}
+
+func (c Card) IsAce() bool {
+	return c.Rank() == CardRankAce
+}
+
+func (c Card) Value() int {
+	r := c.Rank()
+	if r > CardRankTen {
+		return 10
+	}
+
+	return int(r) + 2
 }
 
 func (c Card) String() string {
-	v := c % 13
+	r := c.Rank()
 	bf := bytes.NewBuffer(nil)
-	if v == 9 {
+	if r == CardRankTen {
 		bf.WriteString("10")
 	} else {
-		bf.WriteRune(cardValueNames[v])
+		bf.WriteRune(cardValueNames[r])
 	}
-	bf.WriteRune(cardKindNames[c/13])
+	bf.WriteRune(cardKindNames[c.Suit()])
 	return bf.String()
 }

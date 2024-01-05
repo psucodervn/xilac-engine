@@ -49,3 +49,32 @@ func TestGame_deal(t *testing.T) {
 		})
 	}
 }
+
+func TestGame_Status(t *testing.T) {
+	type fields struct {
+		status GameStatus
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   GameStatus
+	}{
+		{
+			name: "status",
+			fields: fields{
+				status: GameStatusNotStarted,
+			},
+			want: GameStatusNotStarted,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g := Game{
+				status: tt.fields.status,
+			}
+			if got := g.Status(); got != tt.want {
+				t.Errorf("Game.Status() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
