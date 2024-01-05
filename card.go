@@ -52,6 +52,10 @@ func NewCard(rank CardRank, suit CardSuit) Card {
 	return Card(uint8(suit)*13 + uint8(rank))
 }
 
+func NewCardFromID(id int) Card {
+	return Card(id)
+}
+
 func (c Card) Valid() bool {
 	return c < 52
 }
@@ -62,25 +66,6 @@ func (c Card) Rank() CardRank {
 
 func (c Card) Suit() CardSuit {
 	return CardSuit(c / 13)
-}
-
-func (c Card) Value() uint8 {
-	v := c % 13
-	if v > 9 {
-		v = 9
-	}
-	return uint8(v + 1)
-}
-
-func (c Card) Compare(other Card) int {
-	vc := c.Value()
-	vo := other.Value()
-	if vc < vo {
-		return -1
-	} else if vc > vo {
-		return 1
-	}
-	return 0
 }
 
 func (c Card) String() string {

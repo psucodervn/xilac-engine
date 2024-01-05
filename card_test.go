@@ -25,28 +25,6 @@ func TestCard_String(t *testing.T) {
 	}
 }
 
-func TestCard_Value(t *testing.T) {
-	tests := []struct {
-		name string
-		id   uint8
-		want uint8
-	}{
-		{id: 0, want: 1},
-		{id: 1, want: 2},
-		{id: 9, want: 10},
-		{id: 10, want: 10},
-		{id: 51, want: 10},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			c := Card(tt.id)
-			if got := c.Value(); got != tt.want {
-				t.Errorf("Value() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestCard_Valid(t *testing.T) {
 	tests := []struct {
 		name string
@@ -136,26 +114,41 @@ func TestNewCard(t *testing.T) {
 	}
 }
 
-func TestCard_Compare(t *testing.T) {
-	type args struct {
-		other Card
-	}
+func TestCard_Suit(t *testing.T) {
 	tests := []struct {
 		name string
 		c    Card
-		args args
-		want int
+		want CardSuit
 	}{
-		{c: NewCard(CardRankAce, CardSuitClub), args: args{other: NewCard(CardRankAce, CardSuitClub)}, want: 0},
-		{c: NewCard(CardRankAce, CardSuitClub), args: args{other: NewCard(CardRankAce, CardSuitDiamond)}, want: 0},
-		{c: NewCard(CardRankAce, CardSuitClub), args: args{other: NewCard(CardRankTwo, CardSuitClub)}, want: 1},
-		{c: NewCard(CardRankJack, CardSuitClub), args: args{other: NewCard(CardRankKing, CardSuitDiamond)}, want: 0},
-		{c: NewCard(CardRankNine, CardSuitClub), args: args{other: NewCard(CardRankAce, CardSuitClub)}, want: -1},
+		{name: "A♥", c: Card(12), want: CardSuitHeart},
+		{name: "10♥", c: Card(8), want: CardSuitHeart},
+		{name: "K♣", c: Card(37), want: CardSuitClub},
+		{name: "K♠", c: Card(50), want: CardSuitSpade},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.c.Compare(tt.args.other); got != tt.want {
-				t.Errorf("Compare() = %v, want %v", got, tt.want)
+			if got := tt.c.Suit(); got != tt.want {
+				t.Errorf("Suit() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestCard_Rank(t *testing.T) {
+	tests := []struct {
+		name string
+		c    Card
+		want CardRank
+	}{
+		{name: "A♥", c: Card(12), want: CardRankAce},
+		{name: "10♥", c: Card(8), want: CardRankTen},
+		{name: "K♣", c: Card(37), want: CardRankKing},
+		{name: "K♠", c: Card(50), want: CardRankKing},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.c.Rank(); got != tt.want {
+				t.Errorf("Rank() = %v, want %v", got, tt.want)
 			}
 		})
 	}
